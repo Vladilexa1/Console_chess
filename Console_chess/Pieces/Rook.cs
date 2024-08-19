@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace Console_chess.Pieces
 {
-    class Rook : Piece
+    class Rook : LongRangePiece, IRook
     {
         public Rook(Color color, Coordinates coordinates)
         {
             this.color = color;
             this.coordinates = coordinates;
         }
-
         protected override HashSet<CoordinatesShift> getPieceMoves()
         {
-            throw new NotImplementedException();
+            IRook rook = new Rook(color, coordinates);
+            return rook.getRookMoves();
         }
     }
 }

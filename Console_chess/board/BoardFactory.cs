@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Console_chess
+namespace Console_chess.board
 {
     class BoardFactory
     {
@@ -13,11 +13,11 @@ namespace Console_chess
         public Board fromFEN(string fen)
         {
             //rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-            Board board = new Board();
+            Board board = new Board(fen);
 
             string[] parts = fen.Split(' ');
             string piecePositions = parts[0];
-            
+
             string[] fenRows = piecePositions.Split('/');
 
             for (int i = 0; i < fenRows.Length; i++)
@@ -29,7 +29,7 @@ namespace Console_chess
                 for (int j = 0; j < row.Length; j++)
                 {
                     char fenChar = row[j];
-                    if (Char.IsDigit(fenChar))
+                    if (char.IsDigit(fenChar))
                     {
                         fileIndex += int.Parse(fenChar.ToString());
                     }
@@ -41,9 +41,21 @@ namespace Console_chess
                         fileIndex++;
                     }
                 }
-               
+
             }
             return board;
         }
+
+        public Board copy(Board sourse)
+        {
+            Board clone = fromFEN(sourse.startingFen);
+            foreach (var move in sourse.moves)
+            {
+                clone.makeMove(move);
+            }
+            return clone;
+        }
+
+
     }
 }

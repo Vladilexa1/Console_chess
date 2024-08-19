@@ -1,4 +1,5 @@
-﻿namespace Console_chess
+﻿using Console_chess.board;
+namespace Console_chess
 {
     public enum Color
     {

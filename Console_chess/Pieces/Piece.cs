@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Console_chess.board;
 
 namespace Console_chess.Pieces
 {
@@ -11,11 +12,7 @@ namespace Console_chess.Pieces
     {
         public Color color;
         public Coordinates coordinates;
-        //public Piese(Color color, Coordinates coordinates)
-        //{
-        //    this.color = color;
-        //    this.coordinates = coordinates;
-        //}
+      
        public HashSet<Coordinates> getAviableMoveSquares(Board board)
        {
             HashSet<Coordinates> result = new HashSet<Coordinates>();
@@ -33,13 +30,41 @@ namespace Console_chess.Pieces
             return result;
        }
 
-        private bool isSquareAvailableForMove(Coordinates coordinates, Board board)
-        { 
+       protected virtual bool isSquareAvailableForMove(Coordinates coordinates, Board board)
+       { 
             return board.isSquareEmpty(coordinates) || board.getPiece(coordinates).color != color;
-        }
+       }
 
         protected abstract HashSet<CoordinatesShift> getPieceMoves();
        
+        protected virtual HashSet<CoordinatesShift> getPieceAttacks()
+        {
+            return getPieceMoves();
+        }
+
+        public HashSet<Coordinates> getAttackedSquares(Board board)
+        {
+            HashSet<CoordinatesShift> pieceAttacks = getPieceAttacks();
+            HashSet<Coordinates> result = new HashSet<Coordinates>();
+
+            foreach (var pieceAttack in pieceAttacks)
+            {
+                if (coordinates.canShift(pieceAttack))
+                {
+                    Coordinates shiftedCoordinates = coordinates.shift(pieceAttack);
+                    if (isSquareAvailableForAttack(shiftedCoordinates, board))
+                    {
+                        result.Add(shiftedCoordinates);
+                    }
+                }
+            }
+            return result;
+        }
+
+        protected virtual bool isSquareAvailableForAttack(Coordinates coordinates, Board board)
+        {
+            return true;
+        }
     }
 
 }

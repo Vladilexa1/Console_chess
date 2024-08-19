@@ -1,4 +1,5 @@
-﻿using Console_chess.Pieces;
+﻿using Console_chess.board;
+using Console_chess.Pieces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,11 @@ namespace Console_chess
 
         private BoardConsoleRenderer renderer = new BoardConsoleRenderer();
 
-        private InputCoorinates InputCoorinates = new InputCoorinates();
+        private List<GameStateChecker> checkers = new List<GameStateChecker>
+        {
+            new StalemateGameChecker(),
+            new CheckmateGameStateChecker()
+        };
 
         public Game(Board board)
         {
@@ -24,31 +29,49 @@ namespace Console_chess
         public void gameLoop()
         {
             bool isWhiteToMove = true;
-            if (isWhiteToMove)
+
+            GameState state = determineGameState(board, isWhiteToMove ? Color.WHITE : Color.BLACK);
+
+            while (state == GameState.ONGOING)
             {
-                Console.WriteLine("White to move");
-            }
-            else
-            {
-                Console.WriteLine("Black to move");
-            }
-            while (true)
-            {
+                if (isWhiteToMove)
+                {
+                    Console.Clear();
+                    Console.WriteLine("White to move");
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("Black to move");
+                }
                 renderer.Render(board);
 
-               Coordinates soureCoordinates = InputCoorinates.inputPieceCoordinatesForColor
-                   (
-                     isWhiteToMove ? Color.WHITE : Color.BLACK, board
-                   );
+                Move move = InputCoorinates.inputMove(board, isWhiteToMove ? Color.WHITE : Color.BLACK, renderer);
 
-                Piece piece = board.getPiece(soureCoordinates);
-                HashSet<Coordinates> aviableMoveSquares = piece.getAviableMoveSquares(board);
-                renderer.Render(board, piece);
-                Coordinates targetCoordinates = InputCoorinates.inputAviableSquare(aviableMoveSquares);
-                board.movePiece(soureCoordinates, targetCoordinates);
-
+                // make move
+                board.makeMove(move);
+                
+                // pass move
                 isWhiteToMove = !isWhiteToMove;
+
+                state = determineGameState(board, isWhiteToMove ? Color.WHITE : Color.BLACK);
             }
+            renderer.Render(board);
+            Console.WriteLine("Game end with state = " + state);
+        }
+
+        private GameState determineGameState(Board board, Color color)
+        {
+            foreach (var checker in checkers)
+            {
+                GameState state = checker.check(board, color);
+
+                if (state != GameState.ONGOING)
+                {
+                    return state;
+                }
+            }
+            return GameState.ONGOING;
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Console_chess.Pieces
 {
-    class Queen : Piece
+    class Queen : LongRangePiece, IRook, IBishop
     {
         public Queen(Color color, Coordinates coordinates)
         {
@@ -16,7 +16,14 @@ namespace Console_chess.Pieces
 
         protected override HashSet<CoordinatesShift> getPieceMoves()
         {
-            throw new NotImplementedException();
+            HashSet<CoordinatesShift> moves = new HashSet<CoordinatesShift>();
+            
+            IRook rook = new Queen(color, coordinates);
+            IBishop bishop = new Queen(color, coordinates);
+
+            moves.UnionWith(rook.getRookMoves());
+            moves.UnionWith(bishop.getBishopMoves());
+            return moves;
         }
     }
 }

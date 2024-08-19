@@ -1,4 +1,5 @@
-﻿using Console_chess.Pieces;
+﻿using Console_chess.board;
+using Console_chess.Pieces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.SymbolStore;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Console_chess
 {
-    class BoardConsoleRenderer
+    public class BoardConsoleRenderer
     {
         public const string ANSI_RESET = "\u001B[0m";
         public const string ANSI_WHITE_PIECE_COLOR = "\u001B[97m";

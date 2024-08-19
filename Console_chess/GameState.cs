@@ -3,20 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Console_chess.board;
 
 namespace Console_chess
 {
-    public enum File
+    public enum GameState
     {
-        A,
-        B,
-        C,
-        D,
-        E,
-        F,
-        G,
-        H
+        ONGOING,
+        STALEMATE, 
+        CHECKMATE_TO_WHITE_KING,
+        CHECKMATE_TO_BLACK_KING
     }
-
 }

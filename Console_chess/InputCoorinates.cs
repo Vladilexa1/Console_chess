@@ -1,4 +1,5 @@
-﻿using Console_chess.Pieces;
+﻿using Console_chess.board;
+using Console_chess.Pieces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,6 +94,51 @@ namespace Console_chess
                 }
                 return input;
             }
+        }
+        public static Move inputMove(Board board, Color color, BoardConsoleRenderer renderer) 
+        {
+            while (true)
+            {
+                InputCoorinates inputCoorinates = new InputCoorinates();
+                Coordinates soureCoordinates = inputCoorinates.inputPieceCoordinatesForColor(color, board);
+
+                Piece piece = board.getPiece(soureCoordinates);
+                HashSet<Coordinates> aviableMoveSquares = piece.getAviableMoveSquares(board);
+
+                renderer.Render(board, piece);
+                Coordinates targetCoordinates = inputCoorinates.inputAviableSquare(aviableMoveSquares);
+
+                Move move = new Move(soureCoordinates, targetCoordinates);
+                if (validateIfKingInChackAfterMove(board, color, move))
+                {
+                    Console.WriteLine("Your King is under attack!");
+                    continue;
+                }
+                return move;
+            }
+            
+            
+        }
+
+        private static bool validateIfKingInChackAfterMove(Board board, Color color, Move move)
+        {
+            Board copy = (new BoardFactory()).copy(board);
+            copy.makeMove(move);
+            Piece king;
+           
+            foreach (var piece in copy.getPiecesForColor(color))
+            {
+                if (piece.GetType() == new King(piece.color, piece.coordinates).GetType())
+                {
+                    king = piece;
+                   return copy.isSquareAttackedByColor(king.coordinates, swapColor(king.color));
+                }
+            }
+            return false;
+        }
+        private static Color swapColor(Color color)
+        {
+            return color == Color.WHITE ? Color.BLACK : Color.WHITE;
         }
     }
 }

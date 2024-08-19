@@ -1,27 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using Console_chess.Pieces;
 
-namespace Console_chess
+namespace Console_chess.board
 {
     public class Board
     {
-        Dictionary<Coordinates, Piece> pieces = new Dictionary<Coordinates, Piece>();
-       
+        private Dictionary<Coordinates, Piece> pieces = new Dictionary<Coordinates, Piece>();
+        public string startingFen;
+        public List<Move> moves = new List<Move>();
+
+        public Board(string startingFen)
+        {
+            this.startingFen = startingFen;
+        }
+
         public void remuvePiece(Coordinates coordinates)
         {
             pieces.Remove(coordinates);
-        }
-        public void movePiece(Coordinates from, Coordinates to) 
-        {
-            Piece piece = getPiece(from);
-            
-            remuvePiece(from);
-            setPiese(to, piece);
         }
 
         public void setPiese(Coordinates coordinates, Piece piese)
@@ -35,8 +37,8 @@ namespace Console_chess
             {
                 pieces[coordinates] = piese;
             }
-            
-            
+
+
         }
         public void setupDefaultPiecesPositions()
         {
@@ -70,7 +72,7 @@ namespace Console_chess
         }
         public static bool isSquareDark(Coordinates coordinates)
         {
-            return (((((int)coordinates.file) + 1) + coordinates.rank) % 2) == 0;
+            return ((int)coordinates.file + 1 + coordinates.rank) % 2 == 0;
         }
         public bool isSquareEmpty(Coordinates coordinates)
         {
@@ -90,6 +92,45 @@ namespace Console_chess
                 }
             }
             return false;
+        }
+
+        public bool isSquareAttackedByColor(Coordinates coordinates, Color color)
+        {
+            List<Piece> pieces = getPiecesForColor(color);
+
+            foreach (var piece in pieces)
+            {
+                HashSet<Coordinates> attackedSquares = piece.getAttackedSquares(this);
+
+                if (attackedSquares.Contains(coordinates))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public List<Piece> getPiecesForColor(Color color)
+        {
+            List<Piece> result = new List<Piece>();
+
+            foreach (var piece in pieces.Values)
+            {
+                if (piece.color == color)
+                {
+                    result.Add(piece);
+                }
+            }
+            return result;
+        }
+
+        public void makeMove(Move move)
+        {
+            Piece piece = getPiece(move.from);
+
+            remuvePiece(move.from);
+            setPiese(move.to, piece);
+            moves.Add(move);
         }
     }
 }
