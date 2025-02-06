@@ -1,6 +1,7 @@
 # Console_Chess
 
 Консольное приложения для игры в шахматы.
+![](https://github.com/Vladilexa1/Console_chess/blob/master/img/Img.png)
 
 ## Установка
 
